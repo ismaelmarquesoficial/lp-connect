@@ -8,6 +8,15 @@ const GlobalStyles = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  html, body {
+    min-height: 100vh;
+    overflow-x: hidden;
+    scroll-padding-top: 0;
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     font-family: 'Inter', sans-serif;
     background: ${colors.darkBg};
@@ -15,6 +24,13 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  #root {
+    min-height: 100vh;
+    position: relative;
   }
 
   button {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled, { createGlobalStyle, keyframes } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import colors from '../styles/colors';
@@ -143,6 +143,12 @@ const SalesPage = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+    
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setShowScrollButton(scrollY > 500);
@@ -151,13 +157,6 @@ const SalesPage = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   return (
     <ParallaxProvider>
@@ -195,7 +194,6 @@ const SalesPage = () => {
           <AnimatePresence>
             {showScrollButton && (
               <ScrollToTopButton
-                onClick={scrollToTop}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}

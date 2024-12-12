@@ -49,6 +49,10 @@ const NavigationBar = styled(motion.nav)`
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1rem 0;
+
+  @media (max-width: 768px) {
+    padding: 0.5rem 0;
+  }
 `;
 
 const Logo = styled(motion.div)`
@@ -66,6 +70,7 @@ const Logo = styled(motion.div)`
 
   @media (max-width: 768px) {
     font-size: 2rem;
+    text-align: center;
   }
 `;
 
@@ -76,8 +81,7 @@ const NavContainer = styled(Container)`
   gap: 2rem;
 
   @media (max-width: 768px) {
-    gap: 1rem;
-    flex-wrap: wrap;
+    justify-content: center;
   }
 `;
 
@@ -87,10 +91,7 @@ const NavLinks = styled.div`
   align-items: center;
 
   @media (max-width: 768px) {
-    gap: 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
+    display: none;
   }
 `;
 
@@ -146,6 +147,7 @@ const HeaderLeft = styled(motion.div)`
 
   @media (max-width: 1024px) {
     margin: 0 auto;
+    padding-top: 10rem;  
   }
 `;
 
@@ -732,7 +734,7 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="conecta">Conecta</span>
+            <span className="conecta">Connecta</span>
             <span className="ia">.ia</span>
           </Logo>
           <NavLinks>

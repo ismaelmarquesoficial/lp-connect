@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 import colors from '../styles/colors';
-import ScrollReveal from './ScrollReveal';
 
 const typing = keyframes`
   0% { width: 0 }
@@ -155,6 +154,7 @@ const ChatMessages = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   height: calc(100% - 140px);
+  scroll-behavior: auto;
   
   &::-webkit-scrollbar {
     width: 6px;
@@ -302,9 +302,12 @@ const ChatSimulation = () => {
   const [inputValue, setInputValue] = useState('');
   const [currentOptions, setCurrentOptions] = useState([]);
   const messagesEndRef = useRef(null);
+  const chatMessagesRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -355,110 +358,106 @@ const ChatSimulation = () => {
 
   return (
     <ChatSection>
-      <ScrollReveal>
-        <Container>
-          <Title
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            Experimente agora uma <span>conversa com nossa IA</span>
-          </Title>
-          <Description
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            Interaja com nossa IA e veja como ela pode transformar 
-            seu atendimento em uma experiência extraordinária.
-          </Description>
+      <Container>
+        <Title
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Experimente agora uma <span>conversa com nossa IA</span>
+        </Title>
+        <Description
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Interaja com nossa IA e veja como ela pode transformar 
+          seu atendimento em uma experiência extraordinária.
+        </Description>
+        
+        <ChatContainer
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <ChatHeader>
+            <BotAvatar whileHover={{ scale: 1.1, rotate: 5 }}>
+              <i className="fas fa-robot" />
+            </BotAvatar>
+            <BotInfo>
+              <BotName>Conecta.ia Assistant</BotName>
+              <OnlineStatus>Online agora</OnlineStatus>
+            </BotInfo>
+          </ChatHeader>
           
-          <ChatContainer
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8 }}
-          >
-            <ChatHeader>
-              <BotAvatar whileHover={{ scale: 1.1, rotate: 5 }}>
-                <i className="fas fa-robot" />
-              </BotAvatar>
-              <BotInfo>
-                <BotName>Conecta.ia Assistant</BotName>
-                <OnlineStatus>Online agora</OnlineStatus>
-              </BotInfo>
-            </ChatHeader>
-            
-            <ChatMessages>
-              {messages.map((message, index) => (
-                <Message
-                  key={index}
-                  $isBot={message.isBot}
-                  initial={{ opacity: 0, x: message.isBot ? -20 : 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {message.text}
-                </Message>
-              ))}
-              
-              {isTyping && (
-                <TypingIndicator
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <span style={{ animationDelay: '0s' }} />
-                  <span style={{ animationDelay: '0.2s' }} />
-                  <span style={{ animationDelay: '0.4s' }} />
-                </TypingIndicator>
-              )}
-
-              {currentOptions.length > 0 && !isTyping && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
-                  {currentOptions.map((option, index) => (
-                    <motion.button
-                      key={index}
-                      onClick={() => handleSendMessage(option)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      style={{
-                        padding: '8px 16px',
-                        background: `${colors.primary}20`,
-                        border: `1px solid ${colors.primary}40`,
-                        borderRadius: '20px',
-                        color: 'white',
-                        cursor: 'pointer',
-                        fontSize: '0.9rem',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {option}
-                    </motion.button>
-                  ))}
-                </div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </ChatMessages>
-
-            <ChatInput>
-              <Input
-                type="text"
-                placeholder="Digite sua mensagem..."
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-              />
-              <SendButton
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => handleSendMessage()}
+          <ChatMessages ref={chatMessagesRef}>
+            {messages.map((message, index) => (
+              <Message
+                key={index}
+                $isBot={message.isBot}
+                initial={{ opacity: 0, x: message.isBot ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                <i className="fas fa-paper-plane" />
-              </SendButton>
-            </ChatInput>
-          </ChatContainer>
-        </Container>
-      </ScrollReveal>
+                {message.text}
+              </Message>
+            ))}
+            
+            {isTyping && (
+              <TypingIndicator
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                <span style={{ animationDelay: '0s' }} />
+                <span style={{ animationDelay: '0.2s' }} />
+                <span style={{ animationDelay: '0.4s' }} />
+              </TypingIndicator>
+            )}
+
+            {currentOptions.length > 0 && !isTyping && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
+                {currentOptions.map((option, index) => (
+                  <motion.button
+                    key={index}
+                    onClick={() => handleSendMessage(option)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      padding: '8px 16px',
+                      background: `${colors.primary}20`,
+                      border: `1px solid ${colors.primary}40`,
+                      borderRadius: '20px',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontSize: '0.9rem',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {option}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+          </ChatMessages>
+
+          <ChatInput>
+            <Input
+              type="text"
+              placeholder="Digite sua mensagem..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <SendButton
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleSendMessage()}
+            >
+              <i className="fas fa-paper-plane" />
+            </SendButton>
+          </ChatInput>
+        </ChatContainer>
+      </Container>
     </ChatSection>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import colors from '../styles/colors';
@@ -339,6 +339,7 @@ const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [sliderRef, setSliderRef] = useState(null);
 
   const testimonials = [
     {
@@ -373,42 +374,7 @@ const Testimonials = () => {
     }
   ];
 
-  const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.9,
-      filter: 'blur(10px)',
-      rotateY: direction > 0 ? 45 : -45
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      filter: 'blur(0px)',
-      rotateY: 0,
-      transition: {
-        duration: 0.5,
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-      scale: 0.9,
-      filter: 'blur(10px)',
-      rotateY: direction < 0 ? 45 : -45
-    })
-  };
-
-  const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset, velocity) => {
-    return Math.abs(offset) * velocity;
-  };
-
-  const paginate = (newDirection) => {
+  const paginate = useCallback((newDirection) => {
     setDirection(newDirection);
     setCurrentIndex((prevIndex) => {
       let nextIndex = prevIndex + newDirection;
@@ -416,7 +382,7 @@ const Testimonials = () => {
       if (nextIndex >= testimonials.length) nextIndex = 0;
       return nextIndex;
     });
-  };
+  }, [testimonials.length]);
 
   useEffect(() => {
     let interval;
@@ -424,7 +390,7 @@ const Testimonials = () => {
     if (!isPaused) {
       interval = setInterval(() => {
         paginate(1);
-      }, 5000); // Muda a cada 5 segundos
+      }, 5000);
     }
 
     return () => {
@@ -432,116 +398,75 @@ const Testimonials = () => {
         clearInterval(interval);
       }
     };
-  }, [currentIndex, isPaused]);
+  }, [isPaused, paginate]);
 
   useEffect(() => {
-    const track = document.querySelector(SliderTrack);
-    if (!track) return;
+    if (!sliderRef) return;
 
     const handleMouseMove = (e) => {
-      const rect = track.getBoundingClientRect();
+      const rect = sliderRef.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      track.style.setProperty('--x', `${x}%`);
-      track.style.setProperty('--y', `${y}%`);
+      sliderRef.style.setProperty('--x', `${x}%`);
+      sliderRef.style.setProperty('--y', `${y}%`);
     };
 
-    track.addEventListener('mousemove', handleMouseMove);
-    return () => track.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    sliderRef.addEventListener('mousemove', handleMouseMove);
+    return () => sliderRef.removeEventListener('mousemove', handleMouseMove);
+  }, [sliderRef]);
 
   return (
     <Section>
       <Container>
         <ScrollReveal>
-          <SectionTitle>
-            Depoimentos de <motion.span>Clientes</motion.span>
-          </SectionTitle>
-          <SectionSubtitle>
-            Veja o que dizem as empresas que já transformaram seu atendimento
-          </SectionSubtitle>
-        </ScrollReveal>
-
-        <SliderContainer
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          <SliderButton
-            className="prev"
-            onClick={() => paginate(-1)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <i className="fas fa-chevron-left" />
-          </SliderButton>
-
-          <AnimatePresence initial={false} custom={direction}>
-            <SliderTrack>
-              <TestimonialCard
-                key={currentIndex}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 }
-                }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={1}
-                onDragEnd={(e, { offset, velocity }) => {
-                  const swipe = swipePower(offset.x, velocity.x);
-
-                  if (swipe < -swipeConfidenceThreshold) {
-                    paginate(1);
-                  } else if (swipe > swipeConfidenceThreshold) {
-                    paginate(-1);
-                  }
-                }}
-              >
-                <Quote>{testimonials[currentIndex].quote}</Quote>
-                <Author>
-                  <AuthorAvatar
-                    whileHover={{ scale: 1.1, rotate: 10 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    {testimonials[currentIndex].initial}
-                  </AuthorAvatar>
-                  <AuthorInfo>
-                    <AuthorName>{testimonials[currentIndex].author}</AuthorName>
-                    <AuthorRole>{testimonials[currentIndex].role}</AuthorRole>
-                  </AuthorInfo>
-                </Author>
-              </TestimonialCard>
+          <SliderContainer>
+            <SliderTrack
+              ref={setSliderRef}
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+            >
+              <AnimatePresence initial={false} custom={direction}>
+                <TestimonialCard
+                  key={currentIndex}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction > 0 ? 200 : -200 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction > 0 ? -200 : 200 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                  <Quote>{testimonials[currentIndex].quote}</Quote>
+                  <Author>
+                    <AuthorAvatar>
+                      {testimonials[currentIndex].initial}
+                    </AuthorAvatar>
+                    <AuthorInfo>
+                      <AuthorName>{testimonials[currentIndex].author}</AuthorName>
+                      <AuthorRole>{testimonials[currentIndex].role}</AuthorRole>
+                    </AuthorInfo>
+                  </Author>
+                </TestimonialCard>
+              </AnimatePresence>
             </SliderTrack>
-          </AnimatePresence>
 
-          <SliderButton
-            className="next"
-            onClick={() => paginate(1)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <i className="fas fa-chevron-right" />
-          </SliderButton>
+            <SliderButton
+              className="prev"
+              onClick={() => paginate(-1)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <i className="fas fa-chevron-left" />
+            </SliderButton>
 
-          <SliderDots>
-            {testimonials.map((_, index) => (
-              <Dot
-                key={index}
-                $active={currentIndex === index}
-                onClick={() => {
-                  setDirection(index > currentIndex ? 1 : -1);
-                  setCurrentIndex(index);
-                }}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.8 }}
-              />
-            ))}
-          </SliderDots>
-        </SliderContainer>
+            <SliderButton
+              className="next"
+              onClick={() => paginate(1)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <i className="fas fa-chevron-right" />
+            </SliderButton>
+          </SliderContainer>
+        </ScrollReveal>
       </Container>
     </Section>
   );
