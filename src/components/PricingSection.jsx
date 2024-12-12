@@ -11,6 +11,7 @@ const Title = styled.h2`
   color: ${colors.white};
   margin-bottom: 0.5rem;
   
+  
   span {
     color: ${colors.primary};
   }
@@ -42,13 +43,13 @@ const PricingCard = styled(motion.div)`
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(8px);
   border-radius: 16px;
-  padding: 1.5rem;
+  padding: 3rem 2rem;
   position: relative;
   overflow: hidden;
   transform-style: preserve-3d;
   perspective: 1000px;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-  max-width: 400px;
+  max-width: 500px;
   margin: 0 auto;
   isolation: isolate;
 
@@ -134,7 +135,7 @@ const PriceTag = styled.div`
 `;
 
 const PlanTitle = styled.h3`
-  font-size: 1.2rem;
+  font-size: 2rem;
   color: ${colors.white};
   margin-bottom: 0.3rem;
   text-align: center;
@@ -208,7 +209,7 @@ const FeatureItem = styled(motion.div)`
 `;
 
 const PricingButton = styled(motion.button)`
-  width: 100%;
+  width: 85%;
   padding: 0.8rem;
   border: none;
   border-radius: 8px;
@@ -226,6 +227,7 @@ const PricingButton = styled(motion.button)`
   gap: 0.5rem;
   text-decoration: none;
   transition: all 0.3s ease;
+  margin: 0 auto;
 
   &::before,
   &::after {
