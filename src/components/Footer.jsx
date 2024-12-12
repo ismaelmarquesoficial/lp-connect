@@ -134,7 +134,7 @@ const Footer = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Conecta<span>.ia</span>
+            Connect<span>.ai</span>
           </Logo>
 
           <Links variants={itemVariants}>

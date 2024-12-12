@@ -734,8 +734,8 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="conecta">Connecta</span>
-            <span className="ia">.ia</span>
+            <span className="conecta">Connect</span>
+            <span className="ia">.ai</span>
           </Logo>
           <NavLinks>
             <NavLink

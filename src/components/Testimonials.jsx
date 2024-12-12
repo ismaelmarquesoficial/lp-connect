@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import colors from '../styles/colors';
@@ -339,38 +339,23 @@ const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [sliderRef, setSliderRef] = useState(null);
+  const sliderRef = useRef(null);
 
   const testimonials = [
     {
-      quote: "Transformou completamente nosso atendimento! A automação inteligente nos permitiu triplicar nossa capacidade de resposta.",
-      author: "Maria Silva",
-      role: "Loja Virtual",
-      initial: "M"
+      quote: "A IA da Conecta revolucionou nosso atendimento! Agora conseguimos atender 24/7 com respostas precisas e personalizadas.",
+      name: "Maria Silva",
+      role: "CEO da Fashion Store"
     },
     {
-      quote: "Agora conseguimos atender muito mais clientes sem perder qualidade e ainda aumentamos nossas vendas em 70%.",
-      author: "João Santos",
-      role: "E-commerce",
-      initial: "J"
+      quote: "Incrível como a IA entende o contexto e fornece respostas relevantes. Nossos clientes adoram a rapidez no atendimento!",
+      name: "João Santos",
+      role: "Gerente de E-commerce"
     },
     {
-      quote: "O suporte é excepcional. Sempre que precisamos de ajuda, a equipe está pronta para nos atender pelo WhatsApp.",
-      author: "Ana Costa",
-      role: "Agência Digital",
-      initial: "A"
-    },
-    {
-      quote: "A melhor decisão que tomamos foi implementar o Conecta.ia. O retorno sobre o investimento foi imediato.",
-      author: "Pedro Oliveira",
-      role: "Loja de Roupas",
-      initial: "P"
-    },
-    {
-      quote: "Custo-benefício imbatível. Outras soluções custavam 3x mais e ofereciam menos recursos.",
-      author: "Carlos Mendes",
-      role: "Prestador de Serviços",
-      initial: "C"
+      quote: "Desde que implementamos a Conecta.IA, nossas vendas aumentaram em 40%. O melhor investimento que fizemos!",
+      name: "Ana Costa",
+      role: "Diretora Comercial"
     }
   ];
 
@@ -383,6 +368,16 @@ const Testimonials = () => {
       return nextIndex;
     });
   }, [testimonials.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") paginate(-1);
+      if (e.key === "ArrowRight") paginate(1);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [paginate]);
 
   useEffect(() => {
     let interval;
@@ -401,19 +396,23 @@ const Testimonials = () => {
   }, [isPaused, paginate]);
 
   useEffect(() => {
-    if (!sliderRef) return;
+    if (!sliderRef.current) return;
 
     const handleMouseMove = (e) => {
-      const rect = sliderRef.getBoundingClientRect();
+      const rect = sliderRef.current.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
-      sliderRef.style.setProperty('--x', `${x}%`);
-      sliderRef.style.setProperty('--y', `${y}%`);
+      sliderRef.current.style.setProperty('--x', `${x}%`);
+      sliderRef.current.style.setProperty('--y', `${y}%`);
     };
 
-    sliderRef.addEventListener('mousemove', handleMouseMove);
-    return () => sliderRef.removeEventListener('mousemove', handleMouseMove);
-  }, [sliderRef]);
+    sliderRef.current.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      if (sliderRef.current) {
+        sliderRef.current.removeEventListener('mousemove', handleMouseMove);
+      }
+    };
+  }, []);
 
   return (
     <Section>
@@ -421,7 +420,7 @@ const Testimonials = () => {
         <ScrollReveal>
           <SliderContainer>
             <SliderTrack
-              ref={setSliderRef}
+              ref={sliderRef}
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
@@ -437,10 +436,10 @@ const Testimonials = () => {
                   <Quote>{testimonials[currentIndex].quote}</Quote>
                   <Author>
                     <AuthorAvatar>
-                      {testimonials[currentIndex].initial}
+                      {testimonials[currentIndex].name[0]}
                     </AuthorAvatar>
                     <AuthorInfo>
-                      <AuthorName>{testimonials[currentIndex].author}</AuthorName>
+                      <AuthorName>{testimonials[currentIndex].name}</AuthorName>
                       <AuthorRole>{testimonials[currentIndex].role}</AuthorRole>
                     </AuthorInfo>
                   </Author>
