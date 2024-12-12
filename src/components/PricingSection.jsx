@@ -427,7 +427,7 @@ const PricingSection = () => {
               </FeatureList>
               <PricingButton
                 as="a"
-                href="https://wa.me/5511999999999?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Conecta%20IA"
+                href="https://wa.me/5551999046661?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20gostaria%20de%20contratar%20a%20IA%20para%20minha%20empresa!"
                 target="_blank"
                 rel="noopener noreferrer"
                 featured

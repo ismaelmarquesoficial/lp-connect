@@ -177,7 +177,7 @@ const Footer = () => {
 
           <SocialIcons variants={itemVariants}>
             <motion.a 
-              href="https://facebook.com/conectaia" 
+              href="https://facebook.com/connect.ai" 
               target="_blank" 
               rel="noopener noreferrer"
             >
@@ -188,7 +188,7 @@ const Footer = () => {
               />
             </motion.a>
             <motion.a 
-              href="https://instagram.com/conectaia" 
+              href="https://instagram.com/connect.ai" 
               target="_blank" 
               rel="noopener noreferrer"
             >
@@ -199,7 +199,7 @@ const Footer = () => {
               />
             </motion.a>
             <motion.a 
-              href="https://linkedin.com/company/conectaia" 
+              href="https://linkedin.com/company/connect.ai" 
               target="_blank" 
               rel="noopener noreferrer"
             >
@@ -210,7 +210,7 @@ const Footer = () => {
               />
             </motion.a>
             <motion.a 
-              href="https://youtube.com/@conectaia" 
+              href="https://youtube.com/@connect.ai" 
               target="_blank" 
               rel="noopener noreferrer"
             >
