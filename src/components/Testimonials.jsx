@@ -9,7 +9,75 @@ const SliderContainer = styled(motion.div)`
   position: relative;
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding: 4rem 2rem 8rem;
+
+  @media (max-width: 1200px) {
+    padding: 4rem 4rem 8rem;
+  }
+`;
+
+const TimelineContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  position: relative;
+  padding: 1rem 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+`;
+
+const TimelineDot = styled(motion.button)`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: ${props => props.$active ? colors.primary : 'rgba(255, 255, 255, 0.2)'};
+  border: 2px solid ${props => props.$active ? colors.primary : 'rgba(255, 255, 255, 0.3)'};
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &:hover {
+    transform: scale(1.2);
+    background: ${colors.primary};
+    border-color: ${colors.primary};
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -100%;
+    right: -100%;
+    height: 2px;
+    background: ${props => props.$active ? colors.primary : 'transparent'};
+    transform: translateY(-50%);
+    z-index: -1;
+    transition: background-color 0.3s ease;
+  }
+`;
+
+const TimelineProgress = styled(motion.div)`
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  background: ${colors.primary};
+  transform: translateY(-50%);
+  z-index: 0;
 `;
 
 const SliderTrack = styled(motion.div)`
@@ -227,33 +295,20 @@ const SliderButton = styled(motion.button)`
   }
 
   &.prev {
-    left: -80px;
+    left: -24px;
     &:hover i {
       transform: translateX(-2px);
     }
   }
 
   &.next {
-    right: -80px;
+    right: -24px;
     &:hover i {
       transform: translateX(2px);
     }
   }
 
   @media (max-width: 1200px) {
-    &.prev { left: -60px; }
-    &.next { right: -60px; }
-  }
-
-  @media (max-width: 992px) {
-    &.prev { left: -40px; }
-    &.next { right: -40px; }
-  }
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-    
     &.prev { left: 10px; }
     &.next { right: 10px; }
   }
@@ -334,6 +389,43 @@ const SectionSubtitle = styled(motion.p)`
   margin-right: auto;
   letter-spacing: 0.3px;
 `;
+
+const variants = {
+  enter: (direction) => ({
+    x: direction > 0 ? 1000 : -1000,
+    opacity: 0,
+    scale: 0.85,
+    filter: 'blur(8px)',
+    transition: {
+      type: "spring",
+      stiffness: 80,
+      damping: 20
+    }
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 20,
+      mass: 1
+    }
+  },
+  exit: (direction) => ({
+    x: direction < 0 ? 1000 : -1000,
+    opacity: 0,
+    scale: 0.85,
+    filter: 'blur(8px)',
+    transition: {
+      type: "spring",
+      stiffness: 80,
+      damping: 20
+    }
+  })
+};
 
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -424,18 +516,50 @@ const Testimonials = () => {
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <AnimatePresence initial={false} custom={direction}>
+              <AnimatePresence
+                initial={false}
+                custom={direction}
+                mode="wait"
+              >
                 <TestimonialCard
                   key={currentIndex}
                   custom={direction}
-                  initial={{ opacity: 0, x: direction > 0 ? 200 : -200 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction > 0 ? -200 : 200 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
                 >
-                  <Quote>{testimonials[currentIndex].quote}</Quote>
-                  <Author>
-                    <AuthorAvatar>
+                  <Quote
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 20,
+                      delay: 0.2
+                    }}
+                  >
+                    {testimonials[currentIndex].quote}
+                  </Quote>
+                  <Author
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 100,
+                      damping: 20,
+                      delay: 0.3
+                    }}
+                  >
+                    <AuthorAvatar
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17
+                      }}
+                    >
                       {testimonials[currentIndex].name[0]}
                     </AuthorAvatar>
                     <AuthorInfo>
@@ -452,6 +576,11 @@ const Testimonials = () => {
               onClick={() => paginate(-1)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17
+              }}
             >
               <i className="fas fa-chevron-left" />
             </SliderButton>
@@ -461,9 +590,48 @@ const Testimonials = () => {
               onClick={() => paginate(1)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17
+              }}
             >
               <i className="fas fa-chevron-right" />
             </SliderButton>
+
+            <TimelineContainer>
+              {testimonials.map((_, index) => (
+                <TimelineDot
+                  key={index}
+                  $active={currentIndex === index}
+                  onClick={() => {
+                    setDirection(index > currentIndex ? 1 : -1);
+                    setCurrentIndex(index);
+                  }}
+                  whileHover={{ scale: 1.5 }}
+                  whileTap={{ scale: 0.9 }}
+                  animate={{
+                    scale: currentIndex === index ? 1.2 : 1,
+                    transition: {
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 17
+                    }
+                  }}
+                />
+              ))}
+              <TimelineProgress
+                initial={{ scaleX: 0 }}
+                animate={{ 
+                  scaleX: (currentIndex + 1) / testimonials.length,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 20
+                }}
+              />
+            </TimelineContainer>
           </SliderContainer>
         </ScrollReveal>
       </Container>
@@ -471,4 +639,4 @@ const Testimonials = () => {
   );
 };
 
-export default Testimonials; 
+export default Testimonials;
