@@ -113,6 +113,7 @@ const ScrollToTopButton = styled(motion.button)`
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   transition: all 0.3s ease;
+  outline: none;
 
   &:hover {
     transform: translateY(-5px);
@@ -143,12 +144,6 @@ const SalesPage = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    });
-    
     const handleScroll = () => {
       const scrollY = window.scrollY;
       setShowScrollButton(scrollY > 500);
@@ -157,6 +152,13 @@ const SalesPage = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   return (
     <ParallaxProvider>
@@ -194,11 +196,13 @@ const SalesPage = () => {
           <AnimatePresence>
             {showScrollButton && (
               <ScrollToTopButton
+                onClick={scrollToTop}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                aria-label="Voltar ao topo"
               >
                 <i className="fas fa-arrow-up" />
               </ScrollToTopButton>

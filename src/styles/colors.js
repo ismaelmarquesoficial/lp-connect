@@ -1,15 +1,29 @@
 const colors = {
-  primary: '#c2273c',
-  primaryLight: '#d84d5f',
-  primaryDark: '#a11830',
-  darkBg: '#0f0205',
-  white: '#ffffff',
+  primary: '#C2273C',
+  primaryLight: '#E63946',
+  secondary: '#8B4513',
+  secondaryLight: '#A0522D',
+  background: '#000000',
+  white: '#FFFFFF',
   whiteTransparent: 'rgba(255, 255, 255, 0.7)',
-  glassEffect: 'rgba(255, 255, 255, 0.05)',
-  shadowPrimary: '0 10px 30px rgba(194, 39, 60, 0.3)',
-  shadowDark: '0 20px 40px rgba(41, 2, 21, 0.2)',
-  overlayGradient: 'linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5))',
-  mainGradient: 'linear-gradient(135deg, #0f0205 0%, #290215 100%)',
+  darkBg: '#000000',
+  text: {
+    primary: '#FFFFFF',
+    secondary: 'rgba(255, 255, 255, 0.7)',
+    dark: '#000000'
+  },
+  gradient: {
+    primary: 'linear-gradient(45deg, #C2273C, #8B4513)',
+    hover: 'linear-gradient(45deg, #E63946, #A0522D)'
+  },
+  overlay: {
+    dark: 'rgba(0, 0, 0, 0.5)',
+    light: 'rgba(255, 255, 255, 0.1)'
+  },
+  shadow: {
+    primary: '0 4px 15px rgba(194, 39, 60, 0.15)',
+    hover: '0 6px 20px rgba(194, 39, 60, 0.2)'
+  }
 };
 
 export default colors; 

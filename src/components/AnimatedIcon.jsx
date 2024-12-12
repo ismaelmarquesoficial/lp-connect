@@ -14,6 +14,9 @@ const IconContainer = styled(motion.div)`
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
+  will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
 
   &::before {
     content: '';
@@ -61,25 +64,52 @@ const AnimatedIcon = ({
   ...props 
 }) => {
   const iconVariants = {
-    initial: { scale: 0, rotate: -180 },
+    initial: { 
+      scale: 0.8,
+      rotate: -180,
+      opacity: 0 
+    },
     animate: { 
-      scale: 1, 
+      scale: 1,
       rotate: 0,
+      opacity: 1,
       transition: {
         type: "spring",
-        stiffness: 260,
-        damping: 20
+        stiffness: 200,
+        damping: 20,
+        duration: 0.6
       }
     },
     hover: hover ? {
-      scale: 1.1,
-      rotate: rotate ? 360 : 0,
-      transition: { duration: 0.3 }
+      scale: 1.05,
+      rotate: rotate ? 180 : 0,
+      transition: { 
+        type: "spring",
+        stiffness: 300,
+        damping: 15,
+        duration: 0.8
+      }
     } : {},
     tap: {
-      scale: 0.95
+      scale: 0.95,
+      transition: {
+        type: "spring",
+        stiffness: 500,
+        damping: 20
+      }
     }
   };
+
+  const pulseAnimation = pulse ? {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 2,
+      ease: "easeInOut",
+      times: [0, 0.5, 1],
+      repeat: Infinity,
+      repeatDelay: 0.5
+    }
+  } : {};
 
   return (
     <IconContainer
@@ -95,13 +125,7 @@ const AnimatedIcon = ({
     >
       <motion.i 
         className={icon}
-        animate={pulse ? {
-          scale: [1, 1.2, 1],
-          transition: {
-            duration: 2,
-            repeat: Infinity
-          }
-        } : {}}
+        animate={pulseAnimation}
       />
     </IconContainer>
   );

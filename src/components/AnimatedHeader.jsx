@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import colors from '../styles/colors';
+import colors from '../colors';
 
 const HeaderContainer = styled(motion.div)`
   position: relative;
