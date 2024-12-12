@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
-import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ParallaxProvider } from 'react-scroll-parallax';
 import colors from '../styles/colors';
 import Header from '../components/Header';
@@ -139,204 +139,13 @@ const ScrollToTopButton = styled(motion.button)`
   }
 `;
 
-const pulse = keyframes`
-  0% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.5; }
-`;
-
-const glow = keyframes`
-  0% { box-shadow: 0 0 5px #C2273C; }
-  50% { box-shadow: 0 0 20px #C2273C, 0 0 30px #8B4513; }
-  100% { box-shadow: 0 0 5px #C2273C; }
-`;
-
-const TimelineContainer = styled.div`
-  position: fixed;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 70%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 15px;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  @media (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const TimelineLine = styled(motion.div)`
-  width: 3px;
-  height: 100%;
-  background: rgba(139, 69, 19, 0.2);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 3px;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(194, 39, 60, 0.1), rgba(139, 69, 19, 0.1));
-    animation: ${glow} 3s infinite;
-  }
-`;
-
-const TimelineProgress = styled(motion.div)`
-  width: 3px;
-  background: linear-gradient(180deg, #C2273C, #8B4513);
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 0;
-  transform-origin: top;
-  border-radius: 3px;
-  box-shadow: 0 0 10px rgba(194, 39, 60, 0.5);
-`;
-
-const TimelineDot = styled(motion.div)`
-  width: ${props => props.active ? '16px' : '12px'};
-  height: ${props => props.active ? '16px' : '12px'};
-  border-radius: 50%;
-  background: ${props => props.active ? '#C2273C' : 'rgba(139, 69, 19, 0.3)'};
-  margin: 10px 0;
-  cursor: pointer;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
-  border: 2px solid ${props => props.active ? '#fff' : 'transparent'};
-  animation: ${props => props.active ? pulse : 'none'} 2s infinite;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(194, 39, 60, 0.2), transparent);
-    opacity: ${props => props.active ? 1 : 0};
-    transition: opacity 0.3s ease;
-  }
-
-  &::after {
-    content: '${props => props.label}';
-    position: absolute;
-    left: 35px;
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: nowrap;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: white;
-    opacity: 0;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(194, 39, 60, 0.3);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-
-  &:hover::after {
-    opacity: 1;
-    left: 45px;
-  }
-`;
-
-const Timeline = ({ sections }) => {
-  const { scrollYProgress } = useScroll();
-  const progressHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
-  const [activeSection, setActiveSection] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sectionElements = document.querySelectorAll('section');
-      const scrollPosition = window.scrollY + window.innerHeight / 3;
-
-      sectionElements.forEach((section, index) => {
-        const sectionTop = section.offsetTop;
-        const sectionBottom = sectionTop + section.offsetHeight;
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-          setActiveSection(index);
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (index) => {
-    const section = document.querySelectorAll('section')[index];
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  return (
-    <TimelineContainer>
-      <TimelineLine />
-      <TimelineProgress 
-        style={{ height: progressHeight }}
-        initial={{ height: '0%' }}
-        animate={{ height: progressHeight }}
-        transition={{ duration: 0.2 }}
-      />
-      {sections.map((section, index) => (
-        <TimelineDot
-          key={index}
-          label={section}
-          active={index === activeSection}
-          style={{ 
-            top: `${(index / (sections.length - 1)) * 100}%`,
-            scale: index === activeSection ? 1.2 : 1
-          }}
-          onClick={() => scrollToSection(index)}
-          whileHover={{ scale: 1.3 }}
-          whileTap={{ scale: 0.9 }}
-          animate={{
-            scale: index === activeSection ? 1.2 : 1,
-            transition: { duration: 0.3 }
-          }}
-        />
-      ))}
-    </TimelineContainer>
-  );
-};
-
 const SalesPage = () => {
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const sections = [
-    'Início',
-    'Benefícios',
-    'Recursos',
-    'Bônus',
-    'Clientes',
-    'Depoimentos',
-    'Implementação',
-    'Preços'
-  ];
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setShowScrollButton(scrollY > 500); // Mostra o botão após rolar 500px
+      setShowScrollButton(scrollY > 500);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -354,7 +163,6 @@ const SalesPage = () => {
     <ParallaxProvider>
       <GlobalStyle />
       <PageContainer>
-        <Timeline sections={sections} />
         <MainContent>
           <Header />
           <ChatSimulation />
