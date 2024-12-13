@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion, useAnimation } from 'framer-motion';
 import { Section, Container, Grid } from './layout/Section';
@@ -508,19 +508,17 @@ const FloatingIcon = styled.div`
   opacity: 0.6;
   transition: all 0.5s ease;
   filter: blur(6px);
-  width: 200px;
-  height: 200px;
+  width: ${props => props.style?.width};
+  height: ${props => props.style?.height};
+  left: ${props => props.style?.left};
+  top: ${props => props.style?.top};
+  right: ${props => props.style?.right};
+  bottom: ${props => props.style?.bottom};
 
   svg {
     width: 100%;
     height: 100%;
     filter: drop-shadow(0 0 25px rgba(218, 165, 32, 0.7));
-  }
-
-  &:hover {
-    opacity: 0.95;
-    filter: blur(1px);
-    transform: scale(1.2);
   }
 `;
 
@@ -528,11 +526,16 @@ const CircuitLine = styled.div`
   position: absolute;
   background: linear-gradient(90deg, transparent, #DAA520, transparent);
   height: 4px;
-  width: 250px;
+  width: ${props => props.style?.width};
   opacity: 0.4;
   animation: ${pulse} 4s linear infinite;
   animation-delay: ${props => props.$delay}s;
   filter: blur(4px);
+  top: ${props => props.style?.top};
+  left: ${props => props.style?.left};
+  right: ${props => props.style?.right};
+  bottom: ${props => props.style?.bottom};
+  transform: ${props => props.style?.transform};
 `;
 
 const AITypingContainer = styled(motion.div)`
@@ -638,7 +641,61 @@ const AITyping = () => {
   );
 };
 
+// Hook personalizado para tamanho responsivo
+const useResponsiveSize = () => {
+  const [size, setSize] = useState({
+    iconSize: {
+      whatsapp: { width: '100px', height: '100px' },
+      openai: { width: '400px', height: '400px' },
+      brain: { width: '130px', height: '130px' }
+    },
+    lineWidth: '300px'
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setSize({
+          iconSize: {
+            whatsapp: { width: '40px', height: '40px' },
+            openai: { width: '150px', height: '150px' },
+            brain: { width: '50px', height: '50px' }
+          },
+          lineWidth: '100px'
+        });
+      } else if (width <= 768) {
+        setSize({
+          iconSize: {
+            whatsapp: { width: '60px', height: '60px' },
+            openai: { width: '200px', height: '200px' },
+            brain: { width: '80px', height: '80px' }
+          },
+          lineWidth: '150px'
+        });
+      } else {
+        setSize({
+          iconSize: {
+            whatsapp: { width: '100px', height: '100px' },
+            openai: { width: '400px', height: '400px' },
+            brain: { width: '130px', height: '130px' }
+          },
+          lineWidth: '300px'
+        });
+      }
+    };
+
+    handleResize(); // Executa na montagem
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+};
+
 const Header = () => {
+  const { iconSize, lineWidth } = useResponsiveSize();
+
   const handleScrollTo = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -710,15 +767,63 @@ const Header = () => {
   ];
 
   const floatingIcons = [
-    { Icon: RiWhatsappFill, style: { left: '85%', top: '15%', width: '100px', height: '100px' }, delay: 0 },
-    { Icon: SiOpenai, style: { left: '-12%', top: '-3%', width: '400px', height: '400px' }, delay: 1.5 },
-    { Icon: RiBrainFill, style: { left: '45%', top: '70%', width: '130px', height: '130px' }, delay: 0.8 }
+    { 
+      Icon: RiWhatsappFill, 
+      style: { 
+        left: '85%', 
+        top: '15%', 
+        ...iconSize.whatsapp
+      }, 
+      delay: 0 
+    },
+    { 
+      Icon: SiOpenai, 
+      style: { 
+        left: '-12%', 
+        top: '-3%', 
+        ...iconSize.openai
+      }, 
+      delay: 1.5 
+    },
+    { 
+      Icon: RiBrainFill, 
+      style: { 
+        left: '45%', 
+        top: '70%', 
+        ...iconSize.brain
+      }, 
+      delay: 0.8 
+    }
   ];
 
   const circuitLines = [
-    { style: { top: '30%', left: '20%', transform: 'rotate(45deg)', width: '300px' }, delay: 0 },
-    { style: { top: '60%', right: '25%', transform: 'rotate(-30deg)', width: '280px' }, delay: 1 },
-    { style: { bottom: '40%', left: '40%', transform: 'rotate(15deg)', width: '320px' }, delay: 0.5 }
+    { 
+      style: { 
+        top: '30%', 
+        left: '20%', 
+        transform: 'rotate(45deg)', 
+        width: lineWidth 
+      }, 
+      delay: 0 
+    },
+    { 
+      style: { 
+        top: '60%', 
+        right: '25%', 
+        transform: 'rotate(-30deg)', 
+        width: lineWidth 
+      }, 
+      delay: 1 
+    },
+    { 
+      style: { 
+        bottom: '40%', 
+        left: '40%', 
+        transform: 'rotate(15deg)', 
+        width: lineWidth 
+      }, 
+      delay: 0.5 
+    }
   ];
 
   return (
